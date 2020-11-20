@@ -5,9 +5,13 @@ function ShoppingList(props) {
   return (
     <div>
       <h1>{props.listName}</h1>
-      <ul>
+      <ul className="ShoppingList-list">
         {props.list.map((listItem) => {
-          return <li key={listItem}>{listItem}</li>
+          return (
+            <li key={listItem} className="ShoppingList-item">
+              {listItem}
+            </li>
+          )
         })}
       </ul>
     </div>
