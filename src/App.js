@@ -44,7 +44,7 @@ function App() {
       <button onClick={handleAddItem}>Add Item</button>
       <ShoppingList listName="Second List for Whole Foods" list={list} />
     
-      <ShoppingList listName="Third List" list={list} />
+      <ShoppingList listName="Third List" list2={list} />
       <label>
         New Item Name
         <input
