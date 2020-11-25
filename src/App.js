@@ -23,8 +23,8 @@ function App() {
   const [itemName, setItemName] = React.useState("")
 
   function handleAddItem() {
-    setList((previousListState) => previousListState.concat(itemName))
-    setItemName("")
+    setList((previousListState) => previousListState.concat(itemName));
+    setItemName("");
   }
 
   return (
@@ -43,6 +43,17 @@ function App() {
       </label>
       <button onClick={handleAddItem}>Add Item</button>
       <ShoppingList listName="Second List for Whole Foods" list={list} />
+    
+      <ShoppingList listName="Third List" list={list} />
+      <label>
+        New Item Name
+        <input
+          type="text"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value.toUpperCase())}
+        />
+      </label>
+      <button onClick={handleAddItem}>Add Item</button>
     </div>
   )
 }
