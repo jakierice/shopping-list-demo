@@ -1,70 +1,98 @@
-# Getting Started with Create React App
+# Shopping List App Exercises
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Running the App
 
 In the project directory, you can run:
 
 ### `yarn start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
+This will run the app in the development mode.\
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn test`
+--------------------
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Exercises
 
-### `yarn build`
+The following list contains a few "feature requests" that might make the Shopping List app
+a little more useful. There is also a known issue that needs to be fixed.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Features to Add
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Each of the following features can be added independently, and each feature will
+add new value for the app's users. Be creative and solve the problems however
+you can. You can use these exercises as an opportunity to:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  - Ask for review and advice on the design of your feature code and solutions
+  - Pair program with a peer
+  - Practice going through code reviews with a mentor
 
-### `yarn eject`
+#### [FEAT1] Delete items from a shopping list
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The current shopping list implementation does not provide the user with a way
+to delete an item.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+##### Must Haves
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. Each item in the list should have a "Delete" button
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+    - When the "Delete" button is clicked by the user, that item should be removed from the list
 
-## Learn More
+##### Nice to Haves
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. "Undo" button
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    - When a user clicks the "Undo" button **the last shopping list item that was deleted will be added back to the list**
+    - If no items have been deleted, **do not display the "Undo" button**
 
-### Code Splitting
+2. "Deleted" list
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+    - Shows the **last 10 items** that have been deleted off of a shopping list
+    - If no items have been deleted off of the list, **show a message or icon to let the user know nothing has been deleted**
 
-### Analyzing the Bundle Size
+#### [FEAT2] Save shopping list
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Users should be able to open the shopping list app and see the shopping lists they made in the past.
 
-### Making a Progressive Web App
+##### Must haves
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. "Save" button
 
-### Advanced Configuration
+    - When user clicks "Save" button, the **shopping lists are saved in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)** so that is will persist between browser refreshes.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+##### Nice to haves
 
-### Deployment
+1. Auto save
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+    - The shopping lists **save to
+  [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+  every 5 seconds**
 
-### `yarn build` fails to minify
+2. "Clear" button
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    - When user clicks "Clear" button, shopping lists and saved data are both
+  completed deleted
+
+#### [FEAT3] UI styles
+
+The app is currently a bit dull. Use something like a CSS framework or React component library to make this
+Shopping List App a bit nicer to look at.
+
+### Bugs to Fix
+
+#### [BUG1] Can't add items to first shopping list
+
+Fix the first shopping list to behave as expected.
+
+##### Expected behavior
+
+1. Users should be able to add items to every shopping list
+
+##### Actual behavior
+
+1. There are two shopping lists in the app
+2. The first shopping list already has list item when the app loads
+3. There is no way to add new items to the first shopping list
+4. The second shopping list behaves as expected
