@@ -19,10 +19,10 @@ function ShoppingList(props) {
 }
 
 function App() {
-  const [list, setList] = React.useState([]);
-  const [itemName, setItemName] = React.useState("");
-  const [list1, setList1] = useState([]);
-  const [itemName1, setItemName1]= useState("");
+  const [list, setList] = React.useState([])
+  const [itemName, setItemName] = React.useState("")
+  const [list1, setList1] = useState([])
+  const [itemName1, setItemName1] = useState("")
 
   function handleAddItem() {
     setList((previousListState) => previousListState.concat(itemName))
@@ -35,31 +35,30 @@ function App() {
   }
 
   function handleDelete(i) {
-   const newList = [...list]
-   newList.splice(i, 1)
-   setList(newList)
+    const newList = [...list]
+    newList.splice(i, 1)
+    setList(newList)
   }
 
   function handleDelete1(i) {
     const newList1 = [...list1]
     newList1.splice(i, 1)
     setList1(newList1)
-   }
+  }
 
   return (
     <div className="main-div">
-      <ShoppingList
-        listName="First List for HEB" list={list1} />
-        <label>
+      <ShoppingList listName="First List for HEB" list={list1} />
+      <label>
         New Item Name
         <input
           type="text"
           value={itemName1}
           onChange={(e) => setItemName1(e.target.value.toUpperCase())}
         />
-        </label>
-        <button onClick={handleAddItem1}>Add Item</button>
-        <button onClick={handleDelete1}>Delete Item</button>
+      </label>
+      <button onClick={handleAddItem1}>Add Item</button>
+      <button onClick={handleDelete1}>Delete Item</button>
       <ShoppingList listName="Second List for Whole Foods" list={list} />
       <label>
         New Item Name
