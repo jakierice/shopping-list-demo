@@ -6,7 +6,9 @@ function ShoppingList(props) {
   const [list, setList] = React.useState([])
   const [itemName, setItemName] = React.useState("")
 
-  function handleAddItem() {
+  function handleFormSubmit(event) {
+    event.preventDefault()
+
     setList((previousListState) =>
       previousListState.concat({ key: uuid(), name: itemName })
     )
@@ -26,15 +28,17 @@ function ShoppingList(props) {
   return (
     <div>
       <h1>{props.listName}</h1>
-      <label>
-        New Item Name
-        <input
-          type="text"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value.toUpperCase())}
-        />
-      </label>
-      <button onClick={handleAddItem}>Add Item</button>
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          New Item Name
+          <input
+            type="text"
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value.toUpperCase())}
+          />
+        </label>
+        <button onClick={handleFormSubmit}>Add Item</button>
+      </form>
       <button onClick={handleDeleteLastItem}>Delete Last Item</button>
       <ul className="ShoppingList-list">
         {list.map((listItem) => {
