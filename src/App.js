@@ -2,6 +2,15 @@ import React from "react"
 import { v4 as uuid } from "uuid"
 import "./App.css"
 
+const addItemToShoppingList = (name) => (list) =>
+  list.concat({ key: uuid(), name })
+
+const deleteItemFromShoppingList = (itemKey) => (list) =>
+  list.filter((item) => item.key !== itemKey)
+
+const deleteLastItemFromShoppingList = (list) =>
+  list.filter((_, index) => index !== list.length - 1)
+
 function ShoppingList(props) {
   const [list, setList] = React.useState([])
   const [itemName, setItemName] = React.useState("")
@@ -9,20 +18,8 @@ function ShoppingList(props) {
   function handleFormSubmit(event) {
     event.preventDefault()
 
-    setList((previousListState) =>
-      previousListState.concat({ key: uuid(), name: itemName })
-    )
+    setList(addItemToShoppingList(itemName))
     setItemName("")
-  }
-
-  function handleDeleteItem(itemKey) {
-    setList((prevList) => prevList.filter((item) => item.key !== itemKey))
-  }
-
-  function handleDeleteLastItem() {
-    setList((prevList) =>
-      prevList.filter((_, index) => index !== prevList.length - 1)
-    )
   }
 
   return (
@@ -39,13 +36,21 @@ function ShoppingList(props) {
         </label>
         <button onClick={handleFormSubmit}>Add Item</button>
       </form>
-      <button onClick={handleDeleteLastItem}>Delete Last Item</button>
+      <button onClick={() => setList(deleteLastItemFromShoppingList)}>
+        Delete Last Item
+      </button>
       <ul className="ShoppingList-list">
         {list.map((listItem) => {
           return (
             <li key={listItem} className="ShoppingList-item">
               {listItem.name}{" "}
-              <button onClick={() => handleDeleteItem(listItem.key)}>X</button>
+              <button
+                onClick={() =>
+                  setList(deleteItemFromShoppingList(listItem.key))
+                }
+              >
+                X
+              </button>
             </li>
           )
         })}
