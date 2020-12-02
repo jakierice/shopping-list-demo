@@ -1,4 +1,5 @@
 import React from "react"
+import { v4 as uuid } from "uuid"
 import "./App.css"
 
 function ShoppingList(props) {
@@ -6,12 +7,14 @@ function ShoppingList(props) {
   const [itemName, setItemName] = React.useState("")
 
   function handleAddItem() {
-    setList((previousListState) => previousListState.concat(itemName))
+    setList((previousListState) =>
+      previousListState.concat({ key: uuid(), name: itemName })
+    )
     setItemName("")
   }
 
   function handleDeleteItem(itemKey) {
-    setList((prevList) => prevList.filter((item) => item !== itemKey))
+    setList((prevList) => prevList.filter((item) => item.key !== itemKey))
   }
 
   function handleDeleteLastItem() {
@@ -37,8 +40,8 @@ function ShoppingList(props) {
         {list.map((listItem) => {
           return (
             <li key={listItem} className="ShoppingList-item">
-              {listItem}{" "}
-              <button onClick={() => handleDeleteItem(listItem)}>X</button>
+              {listItem.name}{" "}
+              <button onClick={() => handleDeleteItem(listItem.key)}>X</button>
             </li>
           )
         })}
