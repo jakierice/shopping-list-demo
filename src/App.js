@@ -10,10 +10,10 @@ function ShoppingList(props) {
     setItemName("")
   }
 
-  function handleDelete(i) {
-    const newList = [...list]
-    newList.splice(i, 1)
-    setList(newList)
+  function handleDeleteLastItem() {
+    setList((prevList) =>
+      prevList.filter((_, index) => index !== prevList.length - 1)
+    )
   }
 
   return (
@@ -28,7 +28,7 @@ function ShoppingList(props) {
         />
       </label>
       <button onClick={handleAddItem}>Add Item</button>
-      <button onClick={handleDelete}>Delete Item</button>
+      <button onClick={handleDeleteLastItem}>Delete Last Item</button>
       <ul className="ShoppingList-list">
         {list.map((listItem) => {
           return (
