@@ -10,6 +10,10 @@ function ShoppingList(props) {
     setItemName("")
   }
 
+  function handleDeleteItem(itemKey) {
+    setList((prevList) => prevList.filter((item) => item !== itemKey))
+  }
+
   function handleDeleteLastItem() {
     setList((prevList) =>
       prevList.filter((_, index) => index !== prevList.length - 1)
@@ -33,7 +37,8 @@ function ShoppingList(props) {
         {list.map((listItem) => {
           return (
             <li key={listItem} className="ShoppingList-item">
-              {listItem}
+              {listItem}{" "}
+              <button onClick={() => handleDeleteItem(listItem)}>X</button>
             </li>
           )
         })}
