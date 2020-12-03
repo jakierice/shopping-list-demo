@@ -1,76 +1,109 @@
-import React, { useState } from "react"
+import React from "react"
+import { v4 as uuid } from "uuid"
 import "./App.css"
 
+const addItemToShoppingList = (itemName) => (shoppingList) =>
+  shoppingList.concat({ key: uuid(), name: itemName })
+
+const deleteItemFromShoppingList = (itemKey) => (shoppingList) =>
+  shoppingList.filter((item) => item.key !== itemKey)
+
+const deleteLastItemFromShoppingList = (shoppingList) =>
+  shoppingList.filter((item, index) => index !== shoppingList.length - 1)
+
+const emptyShoppingList = () => []
+
+const useShoppingListState = (initialState) => {
+  const [list, setList] = React.useState(initialState)
+
+  return {
+    setListStateWithNewItem: (itemName) => () =>
+      setList(addItemToShoppingList(itemName)),
+
+    setListStateWithoutItem: (itemKey) => () =>
+      setList(deleteItemFromShoppingList(itemKey)),
+
+    setListStateWithoutLastItem: () => setList(deleteLastItemFromShoppingList),
+
+    clearListState: () => setList(emptyShoppingList),
+
+    shoppingList: list,
+  }
+}
+
+const useShoppingListItemForm = ({ setListStateWithNewItem }) => {
+  const [newItemName, setNewItemName] = React.useState("")
+  const validations = [newItemName.length === 0]
+  const isValid = validations.includes(false)
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    if (isValid) {
+      setListStateWithNewItem(newItemName)()
+      setNewItemName("")
+    }
+  }
+
+  return {
+    fields: {
+      name: {
+        value: newItemName,
+        handler: (e) => setNewItemName(e.target.value),
+      },
+    },
+    isValid,
+    handleSubmit,
+  }
+}
+
 function ShoppingList(props) {
+  const {
+    setListStateWithNewItem,
+    setListStateWithoutItem,
+    setListStateWithoutLastItem,
+    clearListState,
+    shoppingList,
+  } = useShoppingListState([])
+
+  const { fields, isValid, handleSubmit } = useShoppingListItemForm({
+    setListStateWithNewItem,
+  })
+
   return (
     <div>
       <h1>{props.listName}</h1>
+      <form onSubmit={handleSubmit}>
+        <label>
+          New Item Name
+          <input
+            type="text"
+            value={fields.name.value}
+            onChange={fields.name.handler}
+          />
+        </label>
+        <button onClick={handleSubmit} disabled={!isValid}>
+          Add Item
+        </button>
+      </form>
+      <button onClick={setListStateWithoutLastItem}>Delete Last Item</button>
+      <button onClick={clearListState}>Reset Shopping List</button>
       <ul className="ShoppingList-list">
-        {props.list.map((listItem) => {
-          return (
-            <li key={listItem} className="ShoppingList-item">
-              {listItem}
-            </li>
-          )
-        })}
+        {shoppingList.map((item) => (
+          <li key={item.key} className="ShoppingList-item">
+            {item.name}{" "}
+            <button onClick={setListStateWithoutItem(item.key)}>X</button>
+          </li>
+        ))}
       </ul>
     </div>
   )
 }
 
 function App() {
-  const [list, setList] = React.useState([]);
-  const [itemName, setItemName] = React.useState("");
-  const [list1, setList1] = useState([]);
-  const [itemName1, setItemName1]= useState("");
-
-  function handleAddItem() {
-    setList((previousListState) => previousListState.concat(itemName))
-    setItemName("")
-  }
-
-  function handleAddItem1() {
-    setList1((previousListState) => previousListState.concat(itemName1))
-    setItemName1("")
-  }
-
-  function handleDelete(i) {
-   const newList = [...list]
-   newList.splice(i, 1)
-   setList(newList)
-  }
-
-  function handleDelete1(i) {
-    const newList1 = [...list1]
-    newList1.splice(i, 1)
-    setList1(newList1)
-   }
-
   return (
     <div className="main-div">
-      <ShoppingList
-        listName="First List for HEB" list={list1} />
-        <label>
-        New Item Name
-        <input
-          type="text"
-          value={itemName1}
-          onChange={(e) => setItemName1(e.target.value.toUpperCase())}
-        />
-        </label>
-        <button onClick={handleAddItem1}>Add Item</button>
-        <button onClick={handleDelete1}>Delete Item</button>
-      <ShoppingList listName="Second List for Whole Foods" list={list} />
-      <label>
-        New Item Name
-        <input
-          type="text"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value.toUpperCase())}
-        />
-      </label>
-      <button onClick={handleAddItem}>Add Item</button>
-      <button onClick={handleDelete}>Delete Item</button>
+      <ShoppingList listName="First List for HEB" />
     </div>
   )
 }
