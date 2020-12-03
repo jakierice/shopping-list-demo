@@ -1,55 +1,59 @@
 import React from "react"
+import * as R from "ramda"
 import { v4 as uuid } from "uuid"
+
 import "./App.css"
-
-const addItemToShoppingList = (itemName) => (shoppingList) =>
-  shoppingList.concat({ key: uuid(), name: itemName })
-
-const deleteItemFromShoppingList = (itemKey) => (shoppingList) =>
-  shoppingList.filter((item) => item.key !== itemKey)
-
-const deleteLastItemFromShoppingList = (shoppingList) =>
-  shoppingList.filter((item, index) => index !== shoppingList.length - 1)
-
-const emptyShoppingList = () => []
 
 const useShoppingListState = (initialState) => {
   const [list, setList] = React.useState(initialState)
 
   return {
-    setListStateWithNewItem: (itemName) => () =>
-      setList(addItemToShoppingList(itemName)),
+    setListThunks: {
+      newItem: ({ name, quantity }) => () =>
+        setList(R.append({ key: uuid(), name, quantity })),
 
-    setListStateWithoutItem: (itemKey) => () =>
-      setList(deleteItemFromShoppingList(itemKey)),
+      withoutItem: (itemKey) => () =>
+        setList(R.filter((item) => item.key !== itemKey)),
 
-    setListStateWithoutLastItem: () => setList(deleteLastItemFromShoppingList),
+      withLastItem: () => setList(R.dropLast(1)),
 
-    clearListState: () => setList(emptyShoppingList),
-
+      clear: () => setList([]),
+    },
     shoppingList: list,
   }
 }
 
-const useShoppingListItemForm = ({ setListStateWithNewItem }) => {
-  const [newItemName, setNewItemName] = React.useState("")
-  const validations = [newItemName.length === 0]
-  const isValid = validations.includes(false)
+const useShoppingListItemForm = ({ onSubmit }) => {
+  const [name, setName] = React.useState("")
+  const [quantity, setQuantity] = React.useState(0)
+  const isValid = R.allPass([
+    R.propSatisfies(R.pipe(R.isEmpty, R.not), "name"),
+    R.propSatisfies(R.lt(0), "quantity"),
+  ])({ name, quantity })
+
+  const resetForm = () => {
+    setName("")
+    setQuantity(0)
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault()
 
     if (isValid) {
-      setListStateWithNewItem(newItemName)()
-      setNewItemName("")
+      onSubmit({ name, quantity })()
+      resetForm()
     }
   }
 
   return {
     fields: {
       name: {
-        value: newItemName,
-        handler: (e) => setNewItemName(e.target.value),
+        value: name,
+        handler: (e) => setName(e.target.value),
+      },
+      quantity: {
+        value: quantity,
+        handler: (e) => setQuantity(parseInt(e.target.value)),
       },
     },
     isValid,
@@ -58,41 +62,51 @@ const useShoppingListItemForm = ({ setListStateWithNewItem }) => {
 }
 
 function ShoppingList(props) {
-  const {
-    setListStateWithNewItem,
-    setListStateWithoutItem,
-    setListStateWithoutLastItem,
-    clearListState,
-    shoppingList,
-  } = useShoppingListState([])
+  const { setListThunks, shoppingList } = useShoppingListState([])
 
   const { fields, isValid, handleSubmit } = useShoppingListItemForm({
-    setListStateWithNewItem,
+    onSubmit: setListThunks.newItem,
   })
 
   return (
     <div>
-      <h1>{props.listName}</h1>
+      <h2>{props.listName}</h2>
       <form onSubmit={handleSubmit}>
+        <h3>Add New Item</h3>
         <label>
-          New Item Name
+          Name
           <input
             type="text"
             value={fields.name.value}
             onChange={fields.name.handler}
           />
         </label>
+        <label>
+          Quantity
+          <input
+            type="number"
+            value={fields.quantity.value}
+            onChange={fields.quantity.handler}
+          />
+        </label>
         <button onClick={handleSubmit} disabled={!isValid}>
           Add Item
         </button>
       </form>
-      <button onClick={setListStateWithoutLastItem}>Delete Last Item</button>
-      <button onClick={clearListState}>Reset Shopping List</button>
+      <button onClick={setListThunks.withoutLastItem}>Delete Last Item</button>
+      <button onClick={setListThunks.clear}>Reset Shopping List</button>
       <ul className="ShoppingList-list">
         {shoppingList.map((item) => (
           <li key={item.key} className="ShoppingList-item">
-            {item.name}{" "}
-            <button onClick={setListStateWithoutItem(item.key)}>X</button>
+            <button
+              className="ShoppingList-item-deleteButton"
+              onClick={setListThunks.withoutItem(item.key)}
+            >
+              X
+            </button>
+            <span className="ShoppingList-item-name">
+              {item.name} x {item.quantity}
+            </span>
           </li>
         ))}
       </ul>

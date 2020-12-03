@@ -60,7 +60,27 @@ button {
 }
 
 .ShoppingList-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   margin-bottom: 4px;
+}
+
+.ShoppingList-item-deleteButton {
+  border-radius: 100px;
+  background-color: transparent;
+  border: 3px solid #000000;
+  font-size: 20px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.ShoppingList-item-name {
+  margin-left: 4px;
 }
 
 @keyframes App-logo-spin {
