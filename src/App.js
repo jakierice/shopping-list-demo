@@ -2,86 +2,43 @@ import React from "react";
 import * as R from "ramda";
 import { v4 as uuid } from "uuid";
 
+import { useList, useForm } from "./hooks";
+
 import "./App.css";
 
-function useShoppingListState(initialState) {
-  const [list, setList] = React.useState(initialState);
+const newItemFormValidations = [
+  R.propSatisfies(R.compose(R.not, R.isEmpty), "name"),
+  R.propSatisfies(R.lt(0), "quantity"),
+];
 
-  return {
-    setListThunks: {
-      newItem: ({ name, quantity }) => () =>
-        setList(R.append({ key: uuid(), name, quantity })),
+const newItemFormInitialValues = { name: "", quantity: 0 };
 
-      withoutItem: (itemKey) => () =>
-        setList(R.filter((item) => item.key !== itemKey)),
-
-      withLastItem: () => setList(R.dropLast(1)),
-
-      clear: () => setList([]),
-    },
-
-    shoppingList: list,
-  };
-}
-
-function useForm({ onSubmit, initialValues, validations }) {
-  const [values, setValues] = React.useState(initialValues);
-  const isValid = R.allPass(validations)(values);
-
-  const resetForm = () => {
-    setValues(initialValues);
-  };
-
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    if (isValid) {
-      onSubmit(values)();
-      resetForm();
-    }
-  }
-
-  return {
-    values,
-    isValid,
-    handleSubmit,
-    handleOnChange: (field) => (e) =>
-      setValues(R.set(R.lensProp(field), e.target.value)),
-  };
-}
-
-function NewShoppingListItemForm({ handleNewItemCreation }) {
-  const validations = [
-    R.propSatisfies(R.compose(R.not, R.isEmpty), "name"),
-    R.propSatisfies(R.lt(0), "quantity"),
-  ];
-
-  const { isValid, handleSubmit, handleOnChange, values } = useForm({
-    onSubmit: handleNewItemCreation,
-    initialValues: { name: "", quantity: 0 },
-    validations,
+function NewShoppingListItemForm({ onNewItemSubmit }) {
+  const form = useForm({
+    initialValues: newItemFormInitialValues,
+    validations: newItemFormValidations,
+    onSubmit: R.pipe(R.merge({ key: uuid() }), onNewItemSubmit),
   });
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Add New Item</h3>
+    <form onSubmit={form.handleSubmit}>
       <label>
         Name
         <input
           type="text"
-          value={values.name}
-          onChange={handleOnChange("name")}
+          value={form.values.name}
+          onChange={form.handleOnChange("name")}
         />
       </label>
       <label>
         Quantity
         <input
           type="number"
-          value={values.quantity}
-          onChange={handleOnChange("quantity")}
+          value={form.values.quantity}
+          onChange={form.handleOnChange("quantity")}
         />
       </label>
-      <button onClick={handleSubmit} disabled={!isValid}>
+      <button onClick={form.handleSubmit} disabled={!form.isValid}>
         Add Item
       </button>
     </form>
@@ -89,12 +46,13 @@ function NewShoppingListItemForm({ handleNewItemCreation }) {
 }
 
 function ShoppingList(props) {
-  const { setListThunks, shoppingList } = useShoppingListState([]);
-
+  const [shoppingList, setListThunks] = useList([]);
   return (
     <div>
       <h2>{props.listName}</h2>
-      <NewShoppingListItemForm handleNewItemCreation={setListThunks.newItem} />
+      <span>Use the form below to add a new item to your shopping list.</span>
+      <h3>Add New Item</h3>
+      <NewShoppingListItemForm onNewItemSubmit={setListThunks.newItem} />
       <button onClick={setListThunks.withoutLastItem}>Delete Last Item</button>
       <button onClick={setListThunks.clear}>Reset Shopping List</button>
       <ul className="ShoppingList-list">
