@@ -1,20 +1,22 @@
 import React from "react";
 import * as R from "ramda";
 
+export function makeListThunks(lazyFn) {
+  return {
+    newItem: R.pipe(R.append, R.thunkify(lazyFn)),
+
+    withoutItem: R.pipe(R.propEq("key"), R.reject, R.thunkify(lazyFn)),
+
+    withoutLastItem: () => lazyFn(R.dropLast(1)),
+
+    clear: () => lazyFn([]),
+  };
+}
+
 export function useList(initialState) {
   const [list, setList] = React.useState(initialState);
 
-  const thunks = {
-    newItem: R.pipe(R.append, R.thunkify(setList)),
-
-    withoutItem: R.pipe(R.propEq("key"), R.reject, R.thunkify(setList)),
-
-    withoutLastItem: () => setList(R.dropLast(1)),
-
-    clear: () => setList([]),
-  };
-
-  return [list, thunks];
+  return [list, makeListThunks(setList)];
 }
 
 export function useForm({ onSubmit, initialValues, validations }) {
