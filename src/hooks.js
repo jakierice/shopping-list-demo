@@ -40,7 +40,11 @@ export function useForm({ onSubmit, initialValues, validations }) {
     values,
     isValid,
     handleSubmit,
-    handleOnChange: (field) => (e) =>
-      setValues(R.set(R.lensProp(field), e.target.value)),
+    handleOnChange: (field) =>
+      R.pipe(
+        R.path(["target", "value"]),
+        R.set(R.lensProp(field)),
+        setValues
+      ),
   };
 }
