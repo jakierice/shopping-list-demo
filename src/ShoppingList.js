@@ -1,21 +1,28 @@
 import React from "react";
-import * as R from 'ramda'
+import * as R from "ramda";
 import { v4 as uuid } from "uuid";
 
-import {  useForm, useList } from "./hooks";
+import { useForm, useList } from "./hooks";
+
+const newItemNameValidation = R.propSatisfies(
+  R.compose(R.not, R.isEmpty),
+  "name"
+);
+
+const newItemQuantityValidation = R.propSatisfies(R.lt(0), "quantity");
 
 const newItemFormValidations = [
-  R.propSatisfies(R.compose(R.not, R.isEmpty), "name"),
-  R.propSatisfies(R.lt(0), "quantity"),
+  newItemNameValidation,
+  newItemQuantityValidation,
 ];
 
 const newItemFormInitialValues = { name: "", quantity: 0 };
 
-export function NewShoppingListItemForm({ onNewItemSubmit }) {
+export function NewShoppingListItemForm({ handleNewItemFormSubmit }) {
   const form = useForm({
     initialValues: newItemFormInitialValues,
     validations: newItemFormValidations,
-    onSubmit: R.pipe(R.merge({ key: uuid() }), onNewItemSubmit),
+    onSubmit: handleNewItemFormSubmit,
   });
 
   return (
@@ -50,7 +57,12 @@ export function ShoppingList(props) {
       <h2>{props.listName}</h2>
       <span>Use the form below to add a new item to your shopping list.</span>
       <h3>Add New Item</h3>
-      <NewShoppingListItemForm onNewItemSubmit={setListThunks.newItem} />
+      <NewShoppingListItemForm
+        handleNewItemFormSubmit={R.pipe(
+          R.merge({ key: uuid() }),
+          setListThunks.newItem
+        )}
+      />
       <button onClick={setListThunks.withoutLastItem}>Delete Last Item</button>
       <button onClick={setListThunks.clear}>Reset Shopping List</button>
       <ul className="ShoppingList-list">
@@ -71,4 +83,3 @@ export function ShoppingList(props) {
     </div>
   );
 }
-
