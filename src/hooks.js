@@ -5,10 +5,9 @@ export function useList(initialState) {
   const [list, setList] = React.useState(initialState);
 
   const thunks = {
-    newItem: (item) => () => setList(R.append(item)),
+    newItem: R.pipe(R.append, R.thunkify(setList)),
 
-    withoutItem: (itemKey) => () =>
-      setList(R.filter((item) => item.key !== itemKey)),
+    withoutItem: R.pipe(R.propEq("key"), R.reject, R.thunkify(setList)),
 
     withoutLastItem: () => setList(R.dropLast(1)),
 
