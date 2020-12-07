@@ -13,15 +13,29 @@ export function makeListThunks(lazyFn) {
   };
 }
 
+const setStateWithLogger = (setState) => (update) => {
+  return setState((prevState) => {
+    const next = typeof update === "function" ? update(prevState) : update;
+    console.log({
+      previousState: prevState,
+      nextState: next,
+    });
+
+    return next;
+  });
+};
+
 export function useList(initialState) {
   const [list, setList] = React.useState(initialState);
 
-  return [list, makeListThunks(setList)];
+  return [list, makeListThunks(setStateWithLogger(setList))];
 }
 
 export function useForm({ onSubmit, initialValues, validations }) {
   const [values, setValues] = React.useState(initialValues);
-  const isValid = R.allPass(validations)(values);
+  const isValid = R.allPass(
+    R.map(([field, rule]) => R.propSatisfies(rule, field), validations)
+  )(values);
 
   const resetForm = () => {
     setValues(initialValues);
@@ -41,10 +55,6 @@ export function useForm({ onSubmit, initialValues, validations }) {
     isValid,
     handleSubmit,
     handleOnChange: (field) =>
-      R.pipe(
-        R.path(["target", "value"]),
-        R.set(R.lensProp(field)),
-        setValues
-      ),
+      R.pipe(R.path(["target", "value"]), R.set(R.lensProp(field)), setValues),
   };
 }

@@ -4,16 +4,15 @@ import { v4 as uuid } from "uuid";
 
 import { useForm, useList } from "./hooks";
 
-const newItemNameValidation = R.propSatisfies(
-  R.compose(R.not, R.isEmpty),
-  "name"
-);
+const isNotEmpty = R.compose(R.not, R.isEmpty);
 
-const newItemQuantityValidation = R.propSatisfies(R.lt(0), "quantity");
+const newItemNameValidation = R.allPass([R.pipe(R.length, R.lte(3)), isNotEmpty]);
+
+const newItemQuantityValidation = R.lt(0);
 
 const newItemFormValidations = [
-  newItemNameValidation,
-  newItemQuantityValidation,
+  ["quantity", newItemQuantityValidation],
+  ["name", newItemNameValidation],
 ];
 
 const newItemFormInitialValues = { name: "", quantity: 0 };
@@ -52,6 +51,7 @@ export function NewShoppingListItemForm({ handleNewItemFormSubmit }) {
 
 export function ShoppingList(props) {
   const [shoppingList, setListThunks] = useList([]);
+
   return (
     <div>
       <h2>{props.listName}</h2>
