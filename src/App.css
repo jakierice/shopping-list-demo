@@ -28,13 +28,59 @@
   color: #61dafb;
 }
 
+html {
+  background-color: #61dafb;
+  color: black;
+}
+
+h1 {
+  margin-top: 75px;
+}
+
+input {
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+button {
+  border-radius: 15px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+.main-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .ShoppingList-list {
   list-style: none;
   padding-left: 0;
 }
 
 .ShoppingList-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   margin-bottom: 4px;
+}
+
+.ShoppingList-item-deleteButton {
+  border-radius: 100px;
+  background-color: transparent;
+  border: 3px solid #000000;
+  font-size: 20px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.ShoppingList-item-name {
+  margin-left: 4px;
 }
 
 @keyframes App-logo-spin {
